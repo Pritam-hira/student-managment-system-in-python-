@@ -1,0 +1,94 @@
+import json
+import os
+
+# ---------- Student Class ----------
+class Student:
+    def __init__(self, student_id, name, grade):
+        self.student_id = student_id
+        self.name = name
+        self.grade = grade
+
+
+# ---------- List to Store Students ----------
+students = []
+
+
+# ---------- Load Students ----------
+if os.path.exists("students.json"):
+    with open("students.json", "r") as file:
+        data = json.load(file)
+
+        for item in data:
+            student = Student(item["ID"], item["Name"], item["Grade"])
+            students.append(student)
+
+
+# ---------- Menu ----------
+while True:
+    print("\n===== Student Management System =====")
+    print("1. Add Student")
+    print("2. Show Students")
+    print("3. Exit")
+
+    choice = input("Enter your choice: ")
+
+    # ---------- Add Student ----------
+    if choice == "1":
+        student_id = input("Enter Student ID: ")
+
+        # Check Unique ID
+        found = False
+        for student in students:
+            if student.student_id == student_id:
+                found = True
+                break
+
+        if found:
+            print("Student ID already exists!")
+        else:
+            name = input("Enter Name: ")
+            grade = input("Enter Grade: ")
+
+            student = Student(student_id, name, grade)
+            students.append(student)
+
+            # Save to JSON
+            data = []
+            for s in students:
+                data.append({
+                    "ID": s.student_id,
+                    "Name": s.name,
+                    "Grade": s.grade
+                })
+
+            with open("students.json", "w") as file:
+                json.dump(data, file, indent=4)
+
+            print("Student Added Successfully!")
+
+    # ---------- Show Students ----------
+    elif choice == "2":
+        if len(students) == 0:
+            print("No Student Records Found!")
+        else:
+            print("\n--------------------------------------")
+            print("{:<10} {:<20} {:<10}".format("ID", "NAME", "GRADE"))
+            print("--------------------------------------")
+
+            for student in students:
+                print("{:<10} {:<20} {:<10}".format(
+                    student.student_id,
+                    student.name,
+                    student.grade
+                ))
+
+            print("--------------------------------------")
+
+    # ---------- Exit ----------
+    elif choice == "3":
+        print("Thank You!")
+        break
+
+    # ---------- Invalid Choice ----------
+    else:
+        print("Invalid Choice!")
